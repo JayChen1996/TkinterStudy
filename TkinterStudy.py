@@ -128,7 +128,7 @@ if __name__ == '__main__':
     app.mainloop()
 '''
 
-
+'''
 #用正则表达式验证输入的正确性
 import re
 import tkinter as tk
@@ -160,14 +160,68 @@ class App(tk.Tk):
 if __name__ == "__main__":
     app=App()
     app.mainloop()
+'''
+
+'''
+#Spinbox和Scale的用法
+import tkinter as tk
+
+class App(tk.Tk):
+    def __init__(self):
+        super().__init__()
+        self.spinbox = tk.Spinbox(self,from_=0,to=5)
+        self.scale = tk.Scale(self,from_=0,to=5,
+                              orient=tk.HORIZONTAL,
+                              resolution=0.1)
+        self.btn = tk.Button(self,text="Print values",command=self.print_values)
+        self.spinbox.pack()
+        self.scale.pack()
+        self.btn.pack()
+
+    def print_values(self):
+        print("SpinBox:{}".format(self.spinbox.get()))
+        print("Scale:{}".format(self.scale.get()))
+
+if __name__ == "__main__":
+    app = App()
+    app.mainloop()
+'''
 
 
+import tkinter as tk
 
+COLORS = [("Red","red"),("Green","green"),("Blue","blue")]
 
+class ChoiceApp(tk.Tk):
+    def __init__(self):
+        super().__init__()
+        self.var = tk.StringVar()
+        self.var.set("red")
+        #list comprehension递推式构造列表
+        self.buttons = [self.create_radio(c) for c in COLORS]
+        for button in self.buttons:
+            #anchor=tk.W 左对齐
+            button.pack(anchor=tk.W,padx=10,pady=5)
+        self.r = tk.Radiobutton(self,
+                                text="test",
+                                value="testvalue",
+                                command=self.print_option,
+                                variable=self.var)
+        self.r.pack()
 
+    def create_radio(self,option):
+        text,value = option
+        #Radiobutton的variable选项标志着一组互斥的单选框,variable相同就是互斥的单选框
+        return tk.Radiobutton(self,text=text,value=value,
+                              command=self.print_option,
+                              variable=self.var)
 
+    def print_option(self):
+        print(self.var.get())
 
-
+if __name__ == "__main__":
+    app = ChoiceApp()
+    app.mainloop()
 
 
 
