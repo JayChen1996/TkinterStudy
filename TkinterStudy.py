@@ -187,7 +187,9 @@ if __name__ == "__main__":
     app.mainloop()
 '''
 
-
+'''
+#单选按钮
+# variable参数制定一组互斥的单选按钮
 import tkinter as tk
 
 COLORS = [("Red","red"),("Green","green"),("Blue","blue")]
@@ -222,10 +224,81 @@ class ChoiceApp(tk.Tk):
 if __name__ == "__main__":
     app = ChoiceApp()
     app.mainloop()
+'''
 
 
+'''
+#复选框的用法
+#复选框的值可以为数字或字符串，字符串可以用onvalue和offvalue参数指定
+import tkinter as tk
+
+class SwitchApp(tk.Tk):
+    def __init__(self):
+        super().__init__()
+        self.var = tk.IntVar()
+        self.var.set(1)
+        self.strVar = tk.StringVar()
+        self.strVar.set('off')
+        self.cb = tk.Checkbutton(self,text="Active?",
+                                  variable=self.strVar,
+                                  command=self.print_value)
+        self.cb.pack()
+        
+    def print_value(self):
+        print(self.var.get())
+
+if __name__ == "__main__":
+    app = SwitchApp()
+    app.mainloop()
+'''
+
+#Listbox和pack()布局
+#pack()布局中的side选项要参考上一个pack()的控件
+
+import tkinter as tk
+
+DAYS = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]
+MODES = [tk.SINGLE,tk.BROWSE,tk.MULTIPLE,tk.EXTENDED]
+
+class ListApp(tk.Tk):
+    def __init__(self):
+        super().__init__()
+        #tk.Frame,部件
+        self.frame = tk.Frame(self)
+        #tk.Scrollbar 滚动条
+        self.scroll = tk.Scrollbar(self.frame,orient=tk.VERTICAL)
+        self.list = tk.Listbox(self.frame,yscrollcommand=self.scroll.set)
+        self.scroll.config(command=self.list.yview)
+        self.frame.pack()
+        #列表前面加星号，表示解包，将元素拆成一个一个的参数传入insert,可以用print(*DAY)查看
+        self.list.insert(0,*DAYS)
+        self.print_btn = tk.Button(self,
+                                   text="Print selection",
+                                   command=self.print_selection)
+        #按钮列表
+        self.btns = [self.create_btn(m) for m in MODES]
+        #side 设置在frame中的对齐位置
+        self.list.pack(side=tk.LEFT)
+        #fill，值与side相关,side为Left或right，取Y，side为top或bottom，取X
+        self.scroll.pack(side=tk.LEFT,fill=tk.Y)
+        self.print_btn.pack(fill=tk.BOTH)
+        for btn in self.btns:
+            btn.pack(side=tk.LEFT,fill=tk.BOTH)
+
+    def create_btn(self,mode):
+        #config设置ListBox的键盘控制
+        cmd = lambda:self.list.config(selectmode=mode)
+        return tk.Button(self,command=cmd,text=mode.capitalize())
+
+    def print_selection(self):
+        #返回选中的项的索引
+        selection = self.list.curselection()
+        print([self.list.get(i) for i in selection])
 
 
+if __name__ == "__main__":
+    app = ListApp()
+    app.mainloop()
 
 
 
