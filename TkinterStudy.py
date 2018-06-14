@@ -252,6 +252,7 @@ if __name__ == "__main__":
     app.mainloop()
 '''
 
+'''
 #Listbox和pack()布局
 #pack()布局中的side选项要参考上一个pack()的控件
 
@@ -299,7 +300,303 @@ class ListApp(tk.Tk):
 if __name__ == "__main__":
     app = ListApp()
     app.mainloop()
+'''
 
+
+'''
+#各种事件和控件的绑定
+import tkinter as tk
+
+class App(tk.Tk):
+    def __init__(self):
+        super().__init__()
+        frame = tk.Frame(self,bg="green",
+                         height=100,width=100)
+        #bind绑定事件类型与函数,bind的第一个函数使用<modifier-type-detail>
+        # type字段最重要,modifier和detail添加了一些信息
+        #鼠标左键按下
+        frame.bind("<Button-1>",self.print_event)
+        #add参数的值决定了事件之前绑定的函数是被替换还是保留
+        frame.bind("<Button-1>",self.print_type_entry,add='+')
+        #双击鼠标左键
+        frame.bind("<Double-Button-1>",self.print_event)
+        #鼠标释放事件
+        frame.bind("<ButtonRelease-1>",self.print_event)
+        #鼠标按下且移动
+        frame.bind("<B1-Motion>",self.print_event)
+        #光标进入和离开frame部件的事件
+        frame.bind("<Enter>",self.print_event)
+        frame.bind("<Leave>",self.print_event)
+        frame.pack(padx=50,pady=50)
+
+        entry = tk.Entry(self)
+        #获取焦点事件
+        entry.bind("<FocusIn>",self.print_type_entry)
+        #按键事件
+        entry.bind("<Key>",self.print_key)
+        entry.pack(padx=20,pady=20)
+
+    def print_event(self,event):
+        position="(x={},y={})".format(event.x,event.y)
+        print(event.type,"event",position)
+
+    def print_type_entry(self,event):
+        print(event.type)
+
+    def print_key(self,event):
+        #构造元组的一种方式
+        args=event.keysym,event.keycode,event.char
+        print("Symbol:{},Code:{},Char:{}".format(*args))
+
+
+if __name__=="__main__":
+    app = App()
+    app.mainloop()
+'''
+
+'''
+#tkinter设置图标函数iconbitmap出错
+import tkinter as tk
+
+class App(tk.Tk):
+    def __init__(self):
+        super().__init__()
+        self.title("My Tkinter App")
+        self.iconbitmap('icons/python.ico')
+        self.geometry("400x200+10+10")
+
+
+if __name__ == "__main__":
+    app = App()
+    app.mainloop()
+'''
+
+'''
+#Listbox和Scrollbar和Frame控件
+import tkinter as tk
+
+#继承Frame的子类
+class ListFrame(tk.Frame):
+    def __init__(self,master,items=[]):
+        super().__init__(master)
+        #Listbox控件
+        self.list = tk.Listbox(self)
+        #Scrollbar控件,注意滚动条控件和其他控件的结合,设置控件的属性
+        self.scroll = tk.Scrollbar(self,orient=tk.VERTICAL,
+                                    command=self.list.yview)
+        #Scrollbar控件和Listbox控件结合
+        self.list.config(yscrollcommand=self.scroll.set)
+        self.list.insert(0,*items)
+        #都是在Frame下的布局,所以都放左
+        self.list.pack(side=tk.LEFT)
+        self.scroll.pack(side=tk.LEFT,fill=tk.Y)
+
+
+    def pop_selection(self):
+        index = self.list.curselection()
+        if index:
+            value = self.list.get(index)
+            self.list.delete(index)
+            return value
+
+    def insert_item(self,item):
+        self.list.insert(tk.END,item)
+
+
+class App(tk.Tk):
+    def __init__(self):
+        super().__init__()
+        months = ["January","February","March","April","May","June","July","August","September","October","November","December"]
+        self.frame_a = ListFrame(self,months)
+        self.frame_b = ListFrame(self)
+        self.btn_right = tk.Button(self,text=">",command=self.move_right)
+        self.btn_left = tk.Button(self,text="<",command=self.move_left)
+        self.frame_a.pack(side=tk.LEFT,padx=10,pady=10)
+        self.frame_b.pack(side=tk.RIGHT,padx=10,pady=10)
+        self.btn_right.pack(expand=True,ipadx=5)
+        self.btn_left.pack(expand=True,ipadx=5)
+
+    def move_right(self):
+        self.move(self.frame_a,self.frame_b)
+    
+    def move_left(self):
+        self.move(self.frame_b,self.frame_a)
+
+    def move(self,frame_from,frame_to):
+        value=frame_from.pop_selection()
+        if value:
+            frame_to.insert_item(value)
+
+if __name__ == "__main__":
+    app = App()
+    app.mainloop()
+    
+'''
+
+'''
+#pack()布局的学习
+import tkinter as tk
+
+
+class App(tk.Tk):
+    def __init__(self):
+        super().__init__()
+        label_a = tk.Label(self,text="Label A",bg="yellow")
+        label_b = tk.Label(self,text="Label B",bg="orange")
+        frame = tk.Frame(self)
+        label_c = tk.Label(frame,text="Label C",bg="red")
+        label_d = tk.Label(frame,text="Label D",bg="green")
+        label_e = tk.Label(self,text="Label E",bg="blue")
+
+        opts = {'ipadx':10,'ipady':10,'fill':tk.BOTH}
+
+        label_a.pack(side=tk.TOP,**opts)
+        label_b.pack(side=tk.TOP,**opts)
+        label_c.pack(side=tk.LEFT,**opts)
+        label_d.pack(side=tk.LEFT,**opts)
+        frame.pack(side=tk.TOP,ipadx=0)
+        label_e.pack(side=tk.TOP,**opts)
+
+
+if __name__=="__main__":
+    app = App()
+    app.mainloop()
+        
+'''
+
+
+'''
+#grid布局
+
+import tkinter as tk
+
+class App(tk.Tk):
+    def __init__(self):
+        super().__init__()
+        label_a = tk.Label(self,text="Label A",bg="yellow")
+        label_b = tk.Label(self,text="Label B",bg="orange")
+        label_c = tk.Label(self,text="Label C",bg="red")
+        label_d = tk.Label(self,text="Label D",bg="green")
+        label_e = tk.Label(self,text="Label E",bg="blue")
+
+        #sticky选项表明widget的边界,没有sticky这个参数传入，那么控件就待在中间,nwse表示北西南东
+        opts = {'ipadx':10,'ipady':10}#'sticky':'nwse'}
+        #grid()函数设置位置
+        label_a.grid(row=0,column=0,**opts)
+        label_b.grid(row=1,column=0,**opts)
+        label_c.grid(row=0,column=1,rowspan=2,**opts)
+        label_d.grid(row=0,column=2,rowspan=2,**opts)
+        label_e.grid(row=2,column=0,columnspan=3,**opts)
+
+
+if __name__ == "__main__":
+    app = App()
+    app.mainloop()
+
+'''
+
+'''
+#使用Place布局管理器
+
+import tkinter as tk
+
+class App(tk.Tk):
+    def __init__(self):
+        super().__init__()
+        label_a = tk.Label(self,text="Label A",bg="yellow")
+        label_b = tk.Label(self,text="Label B",bg="orange")
+        label_c = tk.Label(self,text="Label C",bg="red")
+        label_d = tk.Label(self,text="Label D",bg="green")
+        label_e = tk.Label(self,text="Label E",bg="blue")
+
+        #relwidth relheight决定控件大小
+        #x,y决定控件绝对位置
+        #anchor决定控件对齐方式
+        #width,
+        label_a.place(relwidth=0.25,relheight=0.25)
+        #x=100和anchor=tk.N固定了左上角的位置,width和height决定了大小
+        label_b.place(x=100,anchor=tk.CENTER,width=100,height=50)
+        #tk.CENTER决定了位置
+        label_c.place(relx=0.5,rely=0.5,anchor=tk.N,
+                      relwidth=0.5,relheight=0.5)
+        label_d.place(in_=label_c,anchor=tk.N+tk.W,
+                      x=2,y=2,relx=0.5,rely=0.5,
+                      relwidth=0.5,relheight=0.5)
+        label_e.place(x=200,y=200,anchor=tk.S+tk.E,
+                      relwidth=0.25,relheight=0.25)
+
+if __name__ == "__main__":
+    app = App()
+    app.mainloop()
+'''
+
+'''
+#LabelFrame的使用示例,grid和pack布局的结合示例
+import tkinter as tk
+
+class App(tk.Tk):
+    def __init__(self):
+        super().__init__()
+        group_1 = tk.LabelFrame(self,padx=15,pady=10,text="Personal Information")
+        group_1.pack(padx=10,pady=5)
+        tk.Label(group_1,text="First name").grid(row=0)
+        tk.Label(group_1,text="Last name").grid(row=1)
+        tk.Entry(group_1).grid(row=0,column=1,sticky=tk.W)
+        tk.Entry(group_1).grid(row=1,column=1,sticky=tk.W)
+
+        group_2 = tk.LabelFrame(self,padx=15,pady=10,text="Address")
+        group_2.pack(padx=10,pady=5)
+
+        tk.Label(group_2,text="Street").grid(row=0)
+        tk.Label(group_2,text="City").grid(row=1)
+        tk.Label(group_2,text="ZIP Code").grid(row=2)
+
+        tk.Entry(group_2).grid(row=0,column=1,sticky=tk.W)
+        tk.Entry(group_2).grid(row=1,column=1,sticky=tk.W)
+        tk.Entry(group_2).grid(row=2,column=1,sticky=tk.W)
+
+        self.btn_submit = tk.Button(self,text="Submit")
+        self.btn_submit.pack(padx=10,pady=10,side=tk.RIGHT)
+
+
+if __name__ == "__main__":
+    app = App()
+    app.mainloop()
+'''
+        
+'''
+#zip函数
+#enumerate函数
+import tkinter as tk
+
+class App(tk.Tk):
+    def __init__(self):
+        super().__init__()
+        fields = ["First name","Last name","Phone","Email"]
+        labels = [tk.Label(self,text=f) for f in fields]
+        #下划线表示上一条语句的执行结果
+        entries = [tk.Entry(self) for _ in fields]
+        #zip函数 
+        self.widgets = list(zip(labels,entries))
+        self.submit = tk.Button(self,text="Print info",command=self.print_info)
+
+        #enumerate 意为枚举,即遍历索引和元素
+        for i,(label,entry) in enumerate(self.widgets):
+            label.grid(row=i,column=0,padx=10,sticky=tk.W)
+            entry.grid(row=i,column=1,padx=10,pady=5)
+
+        self.submit.grid(row=len(fields),column=1,sticky=tk.E,padx=10,pady=10)
+
+    
+    def print_info(self):
+        for label,entry in self.widgets:
+            print("{}={}".format(label.cget("text"),entry.get()))
+
+
+if __name__ == "__main__":
+    app=App()
+    app.mainloop()
+'''
 
 
 
